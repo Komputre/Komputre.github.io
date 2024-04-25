@@ -34,7 +34,7 @@
 
 	<div id="set-height"></div>
 
-	<video id="v0" tabindex="0", autobuffer preload>
+	<video class="v0" tabindex="0", autobuffer preload>
 		<source type='video/mp4;codecs="avc1.42E01E, mp4a.40.2"' src="index.mp4"></source>
 	</video>
 
@@ -46,7 +46,7 @@ console.clear();
 // ffmpeg -i ~/Downloads/Toshiba\ video/original.mov -movflags faststart -vcodec libx264 -crf 23 -g 1 -pix_fmt yuv420p output.mp4
 // ffmpeg -i ~/Downloads/Toshiba\ video/original.mov -vf scale=960:-1 -movflags faststart -vcodec libx264 -crf 20 -g 1 -pix_fmt yuv420p output_960.mp4
 
-const video = document.querySelector(".video-background");
+const video = document.querySelector(".v0");
 let src = video.currentSrc || video.src;
 console.log(video, src);
 
