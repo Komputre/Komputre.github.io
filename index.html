@@ -35,34 +35,85 @@
 	<div id="set-height"></div>
 
 	<video id="v0" tabindex="0", autobuffer preload>
-		<source type='script"' src="index.json"></source>
+		<source type='video/mp4;codecs="avc1.42E01E, mp4a.40.2"' src="index.mp4"></source>
 	</video>
 
 	<script>
 
-var frameNumber = 0, // start video at frame 0
-    // lower numbers = faster playback
-    playbackConst = 1300, 
-    // get page height from video duration
-    setHeight = document.getElementById("set-height"), 
-    // select video element         
-    vid = document.getElementById('v0'); 
-    // var vid = $('#v0')[0]; // jquery option
+console.clear();
+/* The encoding is super important here to enable frame-by-frame scrubbing. */
 
-// dynamically set the page height according to video length
-vid.addEventListener('loadedmetadata', function() {
-  setHeight.style.height = Math.floor(vid.duration) * playbackConst + "px";
-});
+// ffmpeg -i ~/Downloads/Toshiba\ video/original.mov -movflags faststart -vcodec libx264 -crf 23 -g 1 -pix_fmt yuv420p output.mp4
+// ffmpeg -i ~/Downloads/Toshiba\ video/original.mov -vf scale=960:-1 -movflags faststart -vcodec libx264 -crf 20 -g 1 -pix_fmt yuv420p output_960.mp4
 
+const video = document.querySelector(".video-background");
+let src = video.currentSrc || video.src;
+console.log(video, src);
 
-// Use requestAnimationFrame for smooth playback
-function scrollPlay(){  
-  var frameNumber  = window.pageYOffset/playbackConst;
-  vid.currentTime  = frameNumber;
-  window.requestAnimationFrame(scrollPlay);
+/* Make sure the video is 'activated' on iOS */
+function once(el, event, fn, opts) {
+  var onceFn = function (e) {
+    el.removeEventListener(event, onceFn);
+    fn.apply(this, arguments);
+  };
+  el.addEventListener(event, onceFn, opts);
+  return onceFn;
 }
 
-window.requestAnimationFrame(scrollPlay);
+once(document.documentElement, "touchstart", function (e) {
+  video.play();
+  video.pause();
+});
+
+/* ---------------------------------- */
+/* Scroll Control! */
+
+gsap.registerPlugin(ScrollTrigger);
+
+let tl = gsap.timeline({
+  defaults: { duration: 1 },
+  scrollTrigger: {
+    trigger: "#container",
+    start: "top top",
+    end: "bottom bottom",
+    scrub: true
+  }
+});
+
+once(video, "loadedmetadata", () => {
+  tl.fromTo(
+    video,
+    {
+      currentTime: 0
+    },
+    {
+      currentTime: video.duration || 1
+    }
+  );
+});
+
+/* When first coded, the Blobbing was important to ensure the browser wasn't dropping previously played segments, but it doesn't seem to be a problem now. Possibly based on memory availability? */
+setTimeout(function () {
+  if (window["fetch"]) {
+    fetch(src)
+      .then((response) => response.blob())
+      .then((response) => {
+        var blobURL = URL.createObjectURL(response);
+
+        var t = video.currentTime;
+        once(document.documentElement, "touchstart", function (e) {
+          video.play();
+          video.pause();
+        });
+
+        video.setAttribute("src", blobURL);
+        video.currentTime = t + 0.01;
+      });
+  }
+}, 1000);
+
+/* ---------------------------------- */
+
 
 	</script>
 
