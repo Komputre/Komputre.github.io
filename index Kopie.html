@@ -1,0 +1,70 @@
+
+<!doctype html>
+<html>
+	overscroll-behavior: none;
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="cache-control" content="no-cache"> 
+	<meta http-equiv="expires" content="0"> 
+	<meta http-equiv="pragma" content="no-cache">
+	
+	<title>The Dons realm of Dada</title>
+	
+	<!--<link rel="stylesheet" href="komputre.css">-->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap" rel="stylesheet">
+	
+
+	<link rel="stylesheet" href="komputre.css">
+	
+	
+</head>
+
+<body class="body">
+
+	<section class="container">
+		<div class="content">
+			<h1>hello hell.</h1>
+			<p>scroll to enter...</p>
+		</div>
+	</section>
+	
+	
+
+	<div id="set-height"></div>
+
+	<video id="v0" tabindex="0", autobuffer preload>
+		<source type='video/mp4;codecs="avc1.42E01E, mp4a.40.2"' src="index.mp4"></source>
+	</video>
+
+	<script>
+
+var frameNumber = 0, // start video at frame 0
+    // lower numbers = faster playback
+    playbackConst = 1300, 
+    // get page height from video duration
+    setHeight = document.getElementById("set-height"), 
+    // select video element         
+    vid = document.getElementById('v0'); 
+    // var vid = $('#v0')[0]; // jquery option
+
+// dynamically set the page height according to video length
+vid.addEventListener('loadedmetadata', function() {
+  setHeight.style.height = Math.floor(vid.duration) * playbackConst + "px";
+});
+
+
+// Use requestAnimationFrame for smooth playback
+function scrollPlay(){  
+  var frameNumber  = window.pageYOffset/playbackConst;
+  vid.currentTime  = frameNumber;
+  window.requestAnimationFrame(scrollPlay);
+}
+
+window.requestAnimationFrame(scrollPlay);
+
+	</script>
+
+</body>
+</html>
